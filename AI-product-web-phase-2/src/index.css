@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@theme {
+    /* Purple Theme Design System */
+    --color-background: oklch(99% 0.005 290);
+    --color-foreground: oklch(15% 0.02 290);
+    --color-card: oklch(100% 0 0);
+    --color-card-foreground: oklch(15% 0.02 290);
+    --color-popover: oklch(100% 0 0);
+    --color-popover-foreground: oklch(15% 0.02 290);
+
+    /* Primary - Vibrant Purple */
+    --color-primary: oklch(55% 0.25 290);
+    --color-primary-foreground: oklch(98% 0.01 290);
+
+    /* Secondary */
+    --color-secondary: oklch(96% 0.02 290);
+    --color-secondary-foreground: oklch(25% 0.03 290);
+
+    /* Muted */
+    --color-muted: oklch(96% 0.01 290);
+    --color-muted-foreground: oklch(50% 0.02 290);
+
+    /* Accent */
+    --color-accent: oklch(94% 0.05 290);
+    --color-accent-foreground: oklch(25% 0.05 290);
+
+    /* Destructive */
+    --color-destructive: oklch(60% 0.25 25);
+    --color-destructive-foreground: oklch(98% 0 0);
+
+    /* Borders */
+    --color-border: oklch(91% 0.015 290);
+    --color-input: oklch(91% 0.015 290);
+    --color-ring: oklch(55% 0.25 290);
+
+    /* Charts */
+    --color-chart-1: oklch(55% 0.25 290);
+    --color-chart-2: oklch(65% 0.2 320);
+    --color-chart-3: oklch(70% 0.18 260);
+    --color-chart-4: oklch(75% 0.15 230);
+    --color-chart-5: oklch(60% 0.22 340);
+
+    --radius: 1rem;
+}
+
+/* Dark Mode */
+.dark {
+    --color-background: oklch(12% 0.02 290);
+    --color-foreground: oklch(95% 0.01 290);
+    --color-card: oklch(16% 0.025 290);
+    --color-card-foreground: oklch(95% 0.01 290);
+    --color-popover: oklch(16% 0.025 290);
+    --color-popover-foreground: oklch(95% 0.01 290);
+    --color-primary: oklch(70% 0.22 290);
+    --color-primary-foreground: oklch(12% 0.02 290);
+    --color-secondary: oklch(22% 0.03 290);
+    --color-secondary-foreground: oklch(95% 0.01 290);
+    --color-muted: oklch(20% 0.02 290);
+    --color-muted-foreground: oklch(65% 0.015 290);
+    --color-accent: oklch(25% 0.05 290);
+    --color-accent-foreground: oklch(90% 0.03 290);
+    --color-destructive: oklch(65% 0.22 25);
+    --color-destructive-foreground: oklch(98% 0 0);
+    --color-border: oklch(25% 0.02 290);
+    --color-input: oklch(25% 0.02 290);
+    --color-ring: oklch(70% 0.22 290);
+}
+
+@layer base {
+    * {
+        @apply border-border;
+        transition:
+            background-color 0.3s ease,
+            color 0.3s ease,
+            border-color 0.3s ease;
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    body {
+        @apply bg-background text-foreground antialiased;
+        font-feature-settings:
+            "rlig" 1,
+            "calt" 1;
+    }
+}
+
+@layer utilities {
+    /* Glassmorphism */
+    .glass {
+        @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-xl;
+    }
+
+    .dark .glass {
+        @apply bg-white/5 backdrop-blur-xl border border-white/10;
+    }
+
+    /* Gradient Text */
+    .gradient-text {
+        @apply bg-gradient-to-r from-purple-600 via-violet-500 to-fuchsia-500 bg-clip-text text-transparent;
+    }
+
+    /* Hover lift effect */
+    .hover-lift {
+        @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+    }
+
+    /* Gradient backgrounds */
+    .gradient-primary {
+        @apply bg-gradient-to-br from-purple-600 via-violet-600 to-fuchsia-700;
+    }
+
+    .gradient-subtle {
+        @apply bg-gradient-to-br from-purple-50 via-white to-violet-50;
+    }
+
+    .dark .gradient-subtle {
+        @apply bg-gradient-to-br from-purple-950/30 via-background to-violet-950/30;
+    }
+
+    /* Animated gradient border */
+    .gradient-border {
+        position: relative;
+        background:
+            linear-gradient(var(--background), var(--background)) padding-box,
+            linear-gradient(135deg, #9333ea, #a855f7, #9333ea) border-box;
+        border: 2px solid transparent;
+    }
+
+    /* Glow effect */
+    .glow {
+        box-shadow: 0 0 40px -10px rgba(147, 51, 234, 0.3);
+    }
+
+    .glow-sm {
+        box-shadow: 0 0 20px -5px rgba(147, 51, 234, 0.2);
+    }
+
+    /* Mesh gradient background */
+    .mesh-gradient {
+        background-color: #f8fafc;
+        background-image:
+            radial-gradient(
+                at 40% 20%,
+                rgba(147, 51, 234, 0.1) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 80% 0%,
+                rgba(168, 85, 247, 0.1) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 0% 50%,
+                rgba(192, 132, 252, 0.1) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 80% 50%,
+                rgba(147, 51, 234, 0.05) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 0% 100%,
+                rgba(168, 85, 247, 0.1) 0px,
+                transparent 50%
+            );
+    }
+
+    .dark .mesh-gradient {
+        background-color: oklch(12% 0.02 290);
+        background-image:
+            radial-gradient(
+                at 40% 20%,
+                rgba(147, 51, 234, 0.15) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 80% 0%,
+                rgba(168, 85, 247, 0.1) 0px,
+                transparent 50%
+            ),
+            radial-gradient(
+                at 0% 50%,
+                rgba(192, 132, 252, 0.1) 0px,
+                transparent 50%
+            );
+    }
+
+    /* Shimmer animation */
+    @keyframes shimmer {
+        0% {
+            background-position: -200% 0;
+        }
+        100% {
+            background-position: 200% 0;
+        }
+    }
+
+    .shimmer {
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent
+        );
+        background-size: 200% 100%;
+        animation: shimmer 2s infinite;
+    }
+
+    /* Float animation */
+    @keyframes float {
+        0%,
+        100% {
+            transform: translateY(0px);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    /* Pulse glow */
+    @keyframes pulse-glow {
+        0%,
+        100% {
+            box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+        }
+        50% {
+            box-shadow: 0 0 40px rgba(147, 51, 234, 0.5);
+        }
+    }
+
+    .animate-pulse-glow {
+        animation: pulse-glow 2s ease-in-out infinite;
+    }
+}
