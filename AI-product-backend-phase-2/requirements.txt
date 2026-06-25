@@ -31,6 +31,7 @@ pandas==2.2.0
 numpy==1.26.3
 
 # Utilities
+email-validator>=2.0.0
 python-dotenv==1.0.1
 python-multipart==0.0.6
 httpx==0.26.0
