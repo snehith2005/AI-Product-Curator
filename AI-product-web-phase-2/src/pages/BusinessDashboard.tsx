@@ -388,7 +388,9 @@ function PlatformAccessPieChart({ platforms }: { platforms: CompetitorData[] }) 
               paddingAngle={3}
               dataKey="value"
               stroke="none"
-              label={({ name, share }) => `${name} (${share}%)`}
+              label={({ name, percent }) =>
+  `${name} (${((percent ?? 0) * 100).toFixed(0)}%)`
+}
               labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
             >
               {pieData.map((_, i) => (
