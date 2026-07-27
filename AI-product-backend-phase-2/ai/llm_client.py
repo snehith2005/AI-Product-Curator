@@ -53,7 +53,7 @@ class LLMClient:
             else:
                 logger.warning(f"No API key for {p['provider'].value} — will skip as fallback")
 
-    @retry(stop=stop_after_attempt(4), wait=wait_exponential(multiplier=2, min=2, max=20), reraise=True)
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(multiplier=1, min=1, max=5), reraise=True)
     async def _call_provider(self, provider_config: dict, messages: list, max_tokens: int, temperature: float) -> str:
         """Call a single provider with retry on transient errors."""
         provider = provider_config["provider"]
@@ -75,7 +75,7 @@ class LLMClient:
             logger.debug(f"{provider.value} response: {generated[:100]}...")
             return generated.strip()
 
-    async def generate(self, prompt: str, system_prompt: Optional[str] = None, max_tokens: int = 3000, temperature: float = 0.7, **kwargs) -> str:
+    async def generate(self, prompt: str, system_prompt: Optional[str] = None, max_tokens: int = 1024, temperature: float = 0.7, **kwargs) -> str:
         """Generate text. Tries primary provider, falls back on connection errors."""
         messages = []
         if system_prompt:
@@ -112,7 +112,7 @@ class LLMClient:
     async def extract_json(self, prompt: str, system_prompt: Optional[str] = None) -> Optional[Any]:
         """Generate and parse JSON response. Returns dict, list, or None."""
         json_system = (system_prompt or "") + "\nRespond ONLY with valid JSON, no other text."
-        response = await self.generate(prompt=prompt, system_prompt=json_system, max_tokens=3000, temperature=0.1)
+        response = await self.generate(prompt=prompt, system_prompt=json_system, temperature=0.1)
         return self._parse_json(response)
 
     def _parse_json(self, text: str) -> Optional[Any]:
@@ -194,7 +194,7 @@ def get_llm_client() -> LLMClient:
             providers.append({
                 "provider": LLMProvider.GROQ,
                 "api_key": "",
-                "model": "llama-3.3-70b-versatile # replace with whatever Groq's docs show as current",
+                "model": "meta-llama/llama-4-scout-17b-16e-instruct",
             })
 
         _llm_client = LLMClient(providers=providers)
