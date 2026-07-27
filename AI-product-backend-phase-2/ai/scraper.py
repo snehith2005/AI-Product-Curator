@@ -227,7 +227,7 @@ class ProductScraper:
                 all_products = filtered
 
         if not all_products:
-            logger.warning("No products scraped — returning demo data")
+            logger.error("SCRAPING FAILED for query='%s' — all platforms returned nothing. Returning demo data.", query)
             all_products = _get_demo_products(query, category)
 
         return all_products[:max_results]
@@ -236,14 +236,17 @@ class ProductScraper:
         self, query: str, platforms: List[str],
         category: Optional[str], results_per_platform: int,
     ) -> List[Dict[str, Any]]:
-        """Scrape multiple platforms concurrently and combine results."""
-        tasks = [
-            self._search_single_platform(
-                query=query, platform=p,
-                category=category, max_results=results_per_platform,
-            )
-            for p in platforms
-        ]
+        """Scrape multiple platforms concurrently (limited) and combine results."""
+        sem = asyncio.Semaphore(2)  # max 2 platforms hitting the LLM at once
+
+        async def _limited_search(p):
+            async with sem:
+                return await self._search_single_platform(
+                    query=query, platform=p,
+                    category=category, max_results=results_per_platform,
+                )
+
+        tasks = [_limited_search(p) for p in platforms]
 
         all_products = []
         for i, result in enumerate(await asyncio.gather(*tasks, return_exceptions=True)):
@@ -381,8 +384,9 @@ class ProductScraper:
                     section += f"\nProduct Image URL: {card['image_url']}"
                 card_md = self._html_to_markdown(card["html"])
                 # Limit each card to keep total size manageable
-                if len(card_md) > 1500:
-                    card_md = card_md[:1500]
+                # Limit each card to keep total size manageable
+                if len(card_md) > 1000:
+                    card_md = card_md[:1000]
                 section += f"\n{card_md}"
                 sections.append(section)
             markdown = "\n\n".join(sections)
@@ -405,8 +409,9 @@ class ProductScraper:
                     markdown += "\nProduct Images:\n" + "\n".join(f"{i+1}. {url}" for i, url in enumerate(image_urls[:max_results]))
 
         # Truncation — increased budget for better extraction
-        if len(markdown) > 24000:
-            markdown = markdown[:24000] + "\n...[truncated]"
+        # Truncation — keep under Groq's 6000 TPM limit
+        if len(markdown) > 15000:
+            markdown = markdown[:15000] + "\n...[truncated]"
 
         try:
             prompt = SEARCH_RESULTS_EXTRACTION_PROMPT.format(
@@ -421,11 +426,12 @@ class ProductScraper:
             logger.error(f"LLM extraction error for {config.name}: {e}")
             return []
 
-        return self._normalize_products(raw_result, platform, config, category)
+        return self._normalize_products(raw_result, platform, config, category, cards=cards if cards else None)
 
     def _normalize_products(
         self, raw_result: Any, platform: str,
         config: PlatformConfig, category: Optional[str] = None,
+        cards: Optional[List[Dict[str, Any]]] = None,
     ) -> List[Dict[str, Any]]:
         """Validate and normalize LLM-extracted product data."""
         if not raw_result:
@@ -498,27 +504,7 @@ class ProductScraper:
                     and len(img) > 20):
                     product["image_url"] = img
 
-            url = item.get("url", "")
-            if url:
-                if url.startswith("/"):
-                    url = config.base_url + url
-                product["url"] = url
-
-            pid = item.get("platform_product_id")
-            if pid:
-                product["platform_product_id"] = str(pid)
-            elif product.get("url"):
-                product["platform_product_id"] = self._extract_product_id(
-                    product["url"], platform
-                )
-
-            normalized.append(product)
-
-        return normalized
-
-    # ------------------------------------------
-    # Internal: scoring & recommendation
-    # ------------------------------------------
+            # Prefer the scraper-extracted URL
 
     def _score_products(self, products):
         """Calculate price_score, rating_score, value_score for comparison ranking."""
