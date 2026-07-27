@@ -41,7 +41,7 @@ class Settings(BaseSettings):
 
     # Groq API (Primary)
     GROQ_API_KEY: str = Field(default="")
-    GROQ_MODEL: str = Field(default="meta-llama/llama-4-scout-17b-16e-instruct")
+    GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile")
 
     # HuggingFace API (Fallback - OpenAI-compatible router)
     HUGGINGFACE_API_KEY: str = Field(default="")
