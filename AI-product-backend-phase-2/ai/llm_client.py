@@ -194,7 +194,7 @@ def get_llm_client() -> LLMClient:
             providers.append({
                 "provider": LLMProvider.GROQ,
                 "api_key": "",
-                "model": "meta-llama/llama-4-scout-17b-16e-instruct",
+                "model": "llama-3.3-70b-versatile # replace with whatever Groq's docs show as current",
             })
 
         _llm_client = LLMClient(providers=providers)

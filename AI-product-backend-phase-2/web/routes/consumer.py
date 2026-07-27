@@ -503,7 +503,7 @@ def _dict_to_comparison(d: dict, is_best: bool = False) -> PlatformComparison:
     return PlatformComparison(
         platform=d.get("platform", "Unknown"),
         platformKey=d.get("platform_key"),
-        productUrl=d.get("product_url") or d.get("url", ""),
+        productUrl=d.get("productUrl") or "",
         platformProductId=d.get("platform_product_id"),
         price=d.get("price", 0),
         originalPrice=d.get("original_price"),
@@ -543,7 +543,13 @@ async def smart_compare_products(
 
         result = await scraper.compare_products(query=query, platforms=platform_list)
 
-        comparisons = [_dict_to_comparison(c) for c in result.comparisons]
+        comparisons = []
+        for c in result.comparisons:
+            try:
+                comparisons.append(_dict_to_comparison(c))
+            except Exception as e:
+                logger.warning(f"Skipping malformed comparison entry: {e}")
+        
         best_deal = _dict_to_comparison(result.best_deal, is_best=True) if result.best_deal else None
 
         return SmartComparisonResponse(
