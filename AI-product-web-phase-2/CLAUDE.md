@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is an **AI-Powered Product Curation and Cross-Platform Price Aggregation for E-Commerce** system - a final year project for MGIT by B.R.MridulaTara & A.Koushik. The frontend is built using React + TypeScript + Vite with TailwindCSS for styling.
+This is an **AI-Powered Product Curation and Cross-Platform Price Aggregation for E-Commerce** system - a final year project for Malla Reddy College of Engineering and Technology by Snehith, Sumanth, Sai Ram. The frontend is built using React + TypeScript + Vite with TailwindCSS for styling.
 
 ## Key Development Commands
 
